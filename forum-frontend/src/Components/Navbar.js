@@ -26,6 +26,7 @@ const ButtonAppBar = () =>{
   const openFriendRequest = Boolean(anchorElFriendReq)
   const [forumUser, setForumUser] = useState(null)
 
+
   const handleClickProfile = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -43,20 +44,28 @@ const ButtonAppBar = () =>{
         method: 'POST',
         body: JSON.stringify({ id: senderId })
     }
-    ).then(
-      fetch('http://localhost:8080/ForumUser/my-profile',{
+    ).then((response)=>{
+      if(response.status === 200){
+        const updatedRequest = forumUser.receivedRequests.filter((req)=> req.id !== senderId)
+        setForumUser({...forumUser, receivedRequests: updatedRequest})
+    }}
+    )
+  }
+
+  const handleDeclineRequest = (senderId) => {
+    fetch('http://localhost:8080/ForumUser/decline-friend-request',{
         headers: {
             "Content-Type":  "application/json",
             Authorization: `Bearer ${JSON.parse(localStorage.getItem('jwt'))}`
-        }
+        },
+        method: 'POST',
+        body: JSON.stringify({ id: senderId })
     }
     ).then((response)=>{
-        if(response.status === 200)
-            return response.json()
-    }).then((forumUser)=>{
-        console.log(forumUser);
-        setForumUser(forumUser)
-    })
+      if(response.status === 200){
+        const updatedRequest = forumUser.receivedRequests.filter((req)=> req.id !== senderId)
+        setForumUser({...forumUser, receivedRequests: updatedRequest})
+    }}
     )
   }
 
@@ -148,10 +157,11 @@ const ButtonAppBar = () =>{
             >
             
               
-              { forumUser.receivedRequests.map((req)=>(
+              { forumUser.receivedRequests.length !== 0 ? (forumUser.receivedRequests.map((req)=>(
               <MenuItem key={req.id} onClick={()=>{
-                navigate(`/forum-user/${req.id}`)
-              }} style={{ fontFamily: 'Candara' }}>{req.firstName} {req.lastName}<Button onClick={()=>handleAcceptRequest(req.id)}>Accept</Button><Button>Decline</Button></MenuItem>))
+              }} style={{ fontFamily: 'Candara' }}>{req.firstName} {req.lastName}
+              <Button onClick={()=>handleAcceptRequest(req.id)}>Accept</Button><Button onClick={()=>handleDeclineRequest(req.id)}>Decline</Button>
+              </MenuItem>))):<div>No friend requests</div>
               }
             </Menu>
               </>

@@ -68,8 +68,8 @@ const MyTopics = () => {
                 <Paper variant='outlined' style={{ border: '3px solid #506c69', padding: '16px', backgroundColor:'#f1f8fc'}}>
                     <Container style={{ backgroundColor:'#f1f8fc'}}>
                         <Grid container spacing={2}>
-                            {
-                                topicsWithLike.map((topic)=>(
+                            
+                                { topicsWithLike.length !== 0 ? (topicsWithLike.map((topic)=>(
                                     <Grid key={topic.topicId} item xs={12} sm={6} md={4}>
                                     <Card style={{ height: '100%' }}>
                                       <CardContent style={{ height: '100%', overflowY: 'auto', display: 'flex', flexDirection: 'column'}}>
@@ -88,8 +88,8 @@ const MyTopics = () => {
                                         </div>
                                       </CardContent>
                                     </Card>
-                                  </Grid>
-                            ))}
+                                  </Grid>))):<div>No posts yet</div>}
+                        
                         </Grid>
                     </Container>
                 </Paper>

@@ -37,6 +37,13 @@ public class Comment {
 
     }
 
+    public void addComment (Comment comment){
+        comments.add(comment);
+    }
+    public void removeComment (Comment comment){
+        comments.remove(comment);
+    }
+
     public String getCommentBody() {
         return commentBody;
     }

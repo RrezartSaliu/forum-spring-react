@@ -112,4 +112,14 @@ public class ForumUserServiceImpl implements ForumUserService {
         forumUserRepository.save(receiver);
         forumUserRepository.save(sender);
     }
+
+    @Override
+    public void declineFriendRequest(Long receiverId, Long senderId) {
+        ForumUser receiver = findById(receiverId);
+        ForumUser sender = findById(senderId);
+        receiver.removeReceivedFriendRequest(sender);
+        sender.removeSentFriendRequest(receiver);
+        forumUserRepository.save(receiver);
+        forumUserRepository.save(sender);
+    }
 }

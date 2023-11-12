@@ -52,4 +52,16 @@ public class CommentServiceImpl implements CommentService {
         Topic topic = topicRepository.findById(topicId).orElseThrow();
         return commentRepository.getAllByTopic(topic);
     }
+
+    @Override
+    public Comment addReply(Comment comment, Long parentCommentId) {
+        comment.setComments(new ArrayList<>());
+        comment.setCreationDate(new Date());
+        comment.setLikes(0);
+        Comment comment1 = commentRepository.save(comment);
+        Comment parent = this.findById(parentCommentId);
+        parent.addComment(comment1);
+        commentRepository.save(parent);
+        return comment1;
+    }
 }

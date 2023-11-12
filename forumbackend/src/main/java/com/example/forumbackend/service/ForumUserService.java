@@ -15,4 +15,5 @@ public interface ForumUserService {
     void unlikeTopic(Long forumUserId, Long topicId);
     void sendFriendRequest(Long senderId, Long receiverId);
     void acceptFriendRequest(Long receiverId, Long senderId);
+    void declineFriendRequest(Long receiverId, Long senderId);
 }

@@ -119,4 +119,11 @@ public class ForumUserController {
 
         return ResponseEntity.ok(null);
     }
+
+    @PostMapping("/decline-friend-request")
+    public ResponseEntity<?> declineFriendRequest(@AuthenticationPrincipal ForumUser forumUser, @RequestBody ForumUser senderReq){
+        forumUserService.declineFriendRequest(forumUser.getId(), senderReq.getId());
+
+        return ResponseEntity.ok(null);
+    }
 }

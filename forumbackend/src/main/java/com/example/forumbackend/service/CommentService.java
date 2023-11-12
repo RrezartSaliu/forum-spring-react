@@ -11,4 +11,5 @@ public interface CommentService {
     Comment findById(Long id);
     Comment deleteComment(Long id);
     List<Comment> getAllByTopic(Long topicId);
+    Comment addReply (Comment comment, Long parentCommentId);
 }

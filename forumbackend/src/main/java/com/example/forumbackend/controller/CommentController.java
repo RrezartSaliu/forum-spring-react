@@ -39,4 +39,14 @@ public class CommentController {
 
         return ResponseEntity.ok(commentList);
     }
+
+    @PostMapping("/create-reply")
+    public ResponseEntity<?> createReply(@RequestBody Map<String, Object> req, @AuthenticationPrincipal ForumUser forumUser ){
+        Comment comment = new Comment();
+        comment.setAuthor(forumUser);
+        comment.setCommentBody((String) req.get("replyReqBody"));
+        commentService.addReply(comment, Long.valueOf(String.valueOf(req.get("commentId"))));
+
+        return ResponseEntity.ok(null);
+    }
 }

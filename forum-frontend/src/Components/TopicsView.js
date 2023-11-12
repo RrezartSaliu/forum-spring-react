@@ -3,6 +3,9 @@ import { useEffect, useState } from "react";
 import { Link } from 'react-router-dom'
 import { CircularProgress, Paper, Container, Typography, Accordion, AccordionDetails, AccordionSummary, Button  } from "@mui/material";
 import { ExpandMore } from "@mui/icons-material";
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+
 
 
 const TopicsView = () => {
@@ -12,10 +15,12 @@ const TopicsView = () => {
     const [ forumUser, setForumUser] = useState(null)
     const [ commentValue, setCommentValue] = useState('')
     const [ comments, setComments ] = useState(null)
+    const [ replyValue, setReplyValue ] = useState([])
 
     const handleComment = (e) =>{
         e.preventDefault()
 
+        if (!(commentValue.trim()==='')){
         const topicId = window.location.href.split('/topics/')[1]
         const commentReqBody = commentValue
         const topicReqId = topicId   
@@ -39,11 +44,48 @@ const TopicsView = () => {
         }).then((comments)=>{
             setComments(comments)
         })
-        })
+        })}
     }
 
-    const handleReply = () => {
-        
+    const handleReplyInputChange = (commentId, valueR) => {
+        setReplyValue((prevComments) =>
+          prevComments.map((comment) =>
+            comment.id === commentId ? { ...comment, value: valueR } : comment
+          )
+    );
+    }
+    const addReply = (e, replyObj) => { 
+        e.preventDefault()
+        if (!(replyObj.value.trim()==='')){
+        const topicId = window.location.href.split('/topics/')[1]
+        const replyReqBody = replyObj.value
+        const commentId = replyObj.id   
+        setReplyValue((prevComments) =>
+          prevComments.map((comment) =>
+            comment.id === replyObj.id ? { ...comment, value: '' } : comment
+          ))
+
+        fetch('http://localhost:8080/comment/create-reply',{
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${jwt}`
+            },
+            method: 'POST',
+            body: JSON.stringify({replyReqBody, commentId})
+        }).then((response)=>{
+            fetch(`http://localhost:8080/comment/get-comments-for-topic/${topicId}`,{
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${jwt}`
+            }
+        }).then((response)=>{
+            if(response.status === 200)
+                return response.json()
+        }).then((comments)=>{
+            setComments(comments)
+        })
+        })
+    }
     }
 
     useEffect(()=>{
@@ -57,7 +99,6 @@ const TopicsView = () => {
             if(response.status === 200)
                 return response.json()
         }).then((topic)=>{
-            console.log(topic);
             setTopic(topic)
         })
         fetch('http://localhost:8080/ForumUser/my-profile',{
@@ -71,6 +112,7 @@ const TopicsView = () => {
                 return response.json()
         }).then((forumUser)=>{
             setForumUser(forumUser)
+            
         })
 
         fetch(`http://localhost:8080/comment/get-comments-for-topic/${topicId}`,{
@@ -82,10 +124,38 @@ const TopicsView = () => {
             if(response.status === 200)
                 return response.json()
         }).then((comments)=>{
+            const pushArray = []
+            comments.map((comment)=>{
+                pushArray.push({id: comment.id, value: ''})
+            })
             setComments(comments)
+            setReplyValue(pushArray)
         })
     },[])
 
+
+    const handleLike = (action)=>{
+        fetch(`http://localhost:8080/topic/add-topic-like/${topic.topicId}/${action}`, {
+            headers:{
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${jwt}`
+            }
+        }).then((response)=>{
+            if(response.status === 200){
+                fetch(`http://localhost:8080/topic/${topic.topicId}`,{
+                    headers:{
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${jwt}`
+                    }
+                    }).then((response)=>{
+                        if(response.status === 200)
+                            return response.json()
+                    }).then((topic)=>{
+                        setTopic(topic)
+                    })
+            }
+        })
+    }
 
     return ( 
         <div style={{ padding: '15vh' }}>
@@ -101,6 +171,7 @@ const TopicsView = () => {
                                 forumUser.fUserId === topic.author.fUserId?<Link to={`/edit-topic/${topic.topicId}`}>Edit Topic</Link>:<></>
                             }
                         </div>
+                        { forumUser.likedTopics.map((topic)=>(topic.id)).includes(topic.topicId)?<Button onClick={()=>{}}><FavoriteIcon/></Button>:<Button onClick={()=>{handleLike('like')}}><FavoriteBorderIcon/></Button> }
                     </Container>
                 </Paper>
                 
@@ -114,28 +185,27 @@ const TopicsView = () => {
                             id="panel1a-header"
                             >
                             <p>{comment.commentBody}</p>
-                            <p> --- by <Link to={`/forum-user/${comment.author.id}`}>{comment.author.firstName}   {comment.author.lastName}</Link></p>
+                            <p> --- by <Link to={`/forum-user/${comment.author.id}`}>{comment.author.firstName} {comment.author.lastName}</Link></p>
                             </AccordionSummary>
                             {
                                 comment.comments.map((reply)=>(
-                                <AccordionDetails>
+                                <AccordionDetails key={reply.id}> 
                                 <Typography>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-                                    malesuada lacus ex, sit amet blandit leo lobortis eget.
+                                    {reply.commentBody}
                                 </Typography>
                                 </AccordionDetails>
                                     ))
                             }
-                            <form onSubmit={handleReply}>
-                                <input type="text" value={commentValue} onChange={(e)=>setCommentValue(e.target.value)}></input>
+                            <form onSubmit={(e)=>addReply(e, {id: comment.id, value: replyValue.find((reply)=>(comment.id === reply.id)).value })}>
+                                <input type="text" value={replyValue.find((reply)=> (comment.id === reply.id)).value} onChange={(e)=>handleReplyInputChange(comment.id, e.target.value)}></input>
                                 <button type="submit">add reply</button>
                             </form>
                         </Accordion>
                         ))
                         }   
                         <form onSubmit={handleComment}>
-                        <input type="text" value={commentValue} onChange={(e)=>setCommentValue(e.target.value)}></input>
-                        <button type="submit">add comment</button>
+                            <input type="text" value={commentValue} onChange={(e)=>setCommentValue(e.target.value)}></input>
+                            <button type="submit">add comment</button>
                         </form>
                     </Container>
                 </Paper>
