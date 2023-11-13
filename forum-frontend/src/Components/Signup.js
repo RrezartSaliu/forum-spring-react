@@ -5,6 +5,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import React from 'react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import fetchCall from '../Services/FetchService';
 
 
 const Signup = () => {
@@ -30,11 +31,8 @@ const Signup = () => {
         event.preventDefault()
         const forumUser = { firstName, lastName, emailAddress, password, dateOfBirth }
 
-        fetch('http://localhost:8080/ForumUser/add',{
-            method: 'POST',
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(forumUser)
-        }).then(()=>{
+        fetchCall('http://localhost:8080/ForumUser/add', 'POST', null, forumUser)
+        .then(()=>{
             navigate('/login')
         })
         

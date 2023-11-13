@@ -5,6 +5,7 @@ import { CircularProgress, Paper, Container, Typography, Accordion, AccordionDet
 import { ExpandMore } from "@mui/icons-material";
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import fetchCall from "../Services/FetchService";
 
 
 
@@ -25,26 +26,15 @@ const TopicsView = () => {
         const commentReqBody = commentValue
         const topicReqId = topicId   
         setCommentValue('')
-        fetch('http://localhost:8080/comment/create',{
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${jwt}`
-            },
-            method: 'POST',
-            body: JSON.stringify({commentReqBody, topicReqId})
-        }).then((response)=>{
-            fetch(`http://localhost:8080/comment/get-comments-for-topic/${topicId}`,{
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${jwt}`
-            }
-        }).then((response)=>{
-            if(response.status === 200)
-                return response.json()
-        }).then((comments)=>{
+
+        fetchCall('http://localhost:8080/comment/create', 'POST', jwt, {commentReqBody, topicReqId})
+        .then((response)=>{
+            fetchCall(`http://localhost:8080/comment/get-comments-for-topic/${topicId}`, 'GET', jwt, null, 'return-response-json')
+            .then((comments)=>{
             setComments(comments)
+            })
         })
-        })}
+        }
     }
 
     const handleReplyInputChange = (commentId, valueR) => {
@@ -65,65 +55,30 @@ const TopicsView = () => {
             comment.id === replyObj.id ? { ...comment, value: '' } : comment
           ))
 
-        fetch('http://localhost:8080/comment/create-reply',{
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${jwt}`
-            },
-            method: 'POST',
-            body: JSON.stringify({replyReqBody, commentId})
-        }).then((response)=>{
-            fetch(`http://localhost:8080/comment/get-comments-for-topic/${topicId}`,{
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${jwt}`
-            }
-        }).then((response)=>{
-            if(response.status === 200)
-                return response.json()
-        }).then((comments)=>{
-            setComments(comments)
-        })
+        fetchCall('http://localhost:8080/comment/create-reply', 'POST', jwt, {replyReqBody, commentId})
+        .then((response)=>{
+            fetchCall(`http://localhost:8080/comment/get-comments-for-topic/${topicId}`, 'GET', jwt, null, 'return-response-json')
+            .then((comments)=>{
+                setComments(comments)
+            })
         })
     }
     }
 
     useEffect(()=>{
         const topicId = window.location.href.split('/topics/')[1]
-        fetch(`http://localhost:8080/topic/${topicId}`,{
-        headers:{
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${jwt}`
-        }
-        }).then((response)=>{
-            if(response.status === 200)
-                return response.json()
-        }).then((topic)=>{
+        fetchCall(`http://localhost:8080/topic/${topicId}`, 'GET', jwt, null, 'return-response-json')
+        .then((topic)=>{
             setTopic(topic)
         })
-        fetch('http://localhost:8080/ForumUser/my-profile',{
-        headers: {
-            "Content-Type":  "application/json",
-            Authorization: `Bearer ${jwt}`
-        }
-        }
-        ).then((response)=>{
-            if(response.status === 200)
-                return response.json()
-        }).then((forumUser)=>{
+        fetchCall('http://localhost:8080/ForumUser/my-profile', 'GET', jwt, null, 'return-response-json')
+        .then((forumUser)=>{
             setForumUser(forumUser)
             
         })
 
-        fetch(`http://localhost:8080/comment/get-comments-for-topic/${topicId}`,{
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${jwt}`
-            }
-        }).then((response)=>{
-            if(response.status === 200)
-                return response.json()
-        }).then((comments)=>{
+        fetchCall(`http://localhost:8080/comment/get-comments-for-topic/${topicId}`, 'GET', jwt, 'return-response-json')
+        .then((comments)=>{
             const pushArray = []
             comments.map((comment)=>{
                 pushArray.push({id: comment.id, value: ''})
@@ -135,24 +90,13 @@ const TopicsView = () => {
 
 
     const handleLike = (action)=>{
-        fetch(`http://localhost:8080/topic/add-topic-like/${topic.topicId}/${action}`, {
-            headers:{
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${jwt}`
-            }
-        }).then((response)=>{
+        fetchCall(`http://localhost:8080/topic/add-topic-like/${topic.topicId}/${action}`, 'GET', jwt)
+        .then((response)=>{
             if(response.status === 200){
-                fetch(`http://localhost:8080/topic/${topic.topicId}`,{
-                    headers:{
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${jwt}`
-                    }
-                    }).then((response)=>{
-                        if(response.status === 200)
-                            return response.json()
-                    }).then((topic)=>{
-                        setTopic(topic)
-                    })
+                fetchCall(`http://localhost:8080/topic/${topic.topicId}`, 'GET', jwt, null, 'return-response-json')
+                .then((topic)=>{
+                    setTopic(topic)
+                })
             }
         })
     }

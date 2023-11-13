@@ -5,6 +5,7 @@ import { Container, Paper, CircularProgress, Button } from "@mui/material";
 import moment from "moment-timezone";
 import { useNavigate } from "react-router-dom";
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import fetchCall from "../Services/FetchService";
 
 const MyProfile = () => {
 
@@ -15,20 +16,12 @@ const MyProfile = () => {
     const navigate = useNavigate()
 
     useEffect(()=>{
-    fetch('http://localhost:8080/ForumUser/my-profile',{
-        headers: {
-            "Content-Type":  "application/json",
-            Authorization: `Bearer ${jwt}`
-        }
-    }
-    ).then((response)=>{
-        if(response.status === 200)
-            return response.json()
-    }).then((forumUser)=>{
-        console.log(forumUser);
-        setForumUser(forumUser)
-    })
-    },[])
+        fetchCall('http://localhost:8080/ForumUser/my-profile', 'GET', jwt, null, 'return-response-json')
+        .then((forumUser)=>{
+            console.log(forumUser);
+            setForumUser(forumUser)
+        })
+        },[])
 
    
 
@@ -54,7 +47,7 @@ const MyProfile = () => {
                         <h3 style={{ float: 'right', display: 'block' }}>
                             <Button onClick={()=>setShowFriendsList(true)}>Friends: {forumUser.friends.length}</Button>
                             <div>Recent Activity</div>
-                            <div>Hellossssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss</div>
+                            <div>Hellooo</div>
                         </h3>
                         <h3>{forumUser.firstName} {forumUser.lastName}</h3>
                         <h4>{forumUser.emailAddress}</h4>

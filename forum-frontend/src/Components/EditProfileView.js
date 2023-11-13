@@ -6,6 +6,7 @@ import { DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import dayjs from "dayjs";
+import fetchCall from "../Services/FetchService";
 
 const EditProfileView = () => {
     const [jwt, setJwt] = useLocalState('','jwt')
@@ -17,16 +18,8 @@ const EditProfileView = () => {
     const navigate = useNavigate();
     
     useEffect(()=>{
-        fetch('http://localhost:8080/ForumUser/my-profile',{
-            headers: {
-                "Content-Type":  "application/json",
-                Authorization: `Bearer ${jwt}`
-            }
-        }
-        ).then((response)=>{
-            if(response.status === 200)
-                return response.json()
-        }).then((forumUser)=>{
+        fetchCall('http://localhost:8080/ForumUser/my-profile', "GET", jwt, null, 'return-response-json')
+        .then((forumUser)=>{
             console.log(forumUser);
             setFirstName(forumUser.firstName)
             setLastName(forumUser.lastName)
@@ -39,15 +32,8 @@ const EditProfileView = () => {
     const handleUpdate = (e) =>{
         e.preventDefault()
         const updateReq = { firstName, lastName, dateOfBirth, bio  }
-        fetch('http://localhost:8080/ForumUser/edit-profile',{
-            headers: {
-                "Content-Type":  "application/json",
-                Authorization: `Bearer ${jwt}`
-            },
-            method: "POST",
-            body: JSON.stringify(updateReq)
-        }
-        ).then((response)=>{
+        fetchCall('http://localhost:8080/ForumUser/edit-profile', 'POST', jwt, updateReq)
+        .then((response)=>{
             if(response.status === 200){
                 console.log("profile succesfully updated");
                 navigate('/my-profile')

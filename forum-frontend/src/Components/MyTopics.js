@@ -6,6 +6,7 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import SendIcon from '@mui/icons-material/Send';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import fetchCall from "../Services/FetchService";
 
 const MyTopics = () => {
     const [jwt, setJwt] = useLocalState('', 'jwt')
@@ -14,45 +15,25 @@ const MyTopics = () => {
     const [topicsWithLike, setTopicsWithLike ] = useState(null)
 
     useEffect(()=>{
-    fetch('http://localhost:8080/topic/user-topics',{
-        headers: {
-            "Content-Type":  "application/json",
-            Authorization: `Bearer ${jwt}`
-        }
-    }
-    ).then((response)=>{
-        if(response.status === 200)
-            return response.json()
-    }).then((topics)=>{
-        setTopics(topics)
-        fetch('http://localhost:8080/ForumUser/my-profile',{
-        headers: {
-            "Content-Type":  "application/json",
-            Authorization: `Bearer ${jwt}`
-        }
-        }
-        ).then((response)=>{
-            if(response.status === 200)
-                return response.json()
-        }).then((forumUser)=>{
-            setForumUser(forumUser)
-            const likedTopicIds = forumUser.likedTopics.map((topic)=>topic.id)
-            const topicsWithLikeC = topics.map((topic)=>({
-                ...topic,
-                isLiked: likedTopicIds.includes(topic.topicId)
-            }))
-            setTopicsWithLike(topicsWithLikeC)
+        fetchCall('http://localhost:8080/topic/user-topics', 'GET', jwt, null, 'return-response-json')
+        .then((topics)=>{
+            setTopics(topics)
+            fetchCall('http://localhost:8080/ForumUser/my-profile', 'GET', jwt, null, 'return-response-json')
+            .then((forumUser)=>{
+                setForumUser(forumUser)
+                const likedTopicIds = forumUser.likedTopics.map((topic)=>topic.id)
+                const topicsWithLikeC = topics.map((topic)=>({
+                    ...topic,
+                    isLiked: likedTopicIds.includes(topic.topicId)
+                }))
+                setTopicsWithLike(topicsWithLikeC)
+            })
         })
-    })
     },[])
 
     const handleLike = (likedTopic, action)=>{
-        fetch(`http://localhost:8080/topic/add-topic-like/${likedTopic.topicId}/${action}`, {
-            headers:{
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${jwt}`
-            }
-        }).then((response)=>{
+        fetchCall(`http://localhost:8080/topic/add-topic-like/${likedTopic.topicId}/${action}`, 'GET', jwt)
+        .then((response)=>{
             if(response.status === 200){
                 const updatedTopics = topicsWithLike.map((topic)=>
                     topic.topicId === likedTopic.topicId ? {...topic, isLiked: !likedTopic.isLiked}:topic

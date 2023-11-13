@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { Link, useNavigate } from 'react-router-dom'
 import { useLocalState } from "../Util/useLocalStorage"
 import { Button, TextField, Box, Container, Paper } from "@mui/material"
+import fetchCall from "../Services/FetchService"
 
 const EditTopicView = () => {
     const [jwt, setJwt] = useLocalState('', 'jwt')
@@ -14,15 +15,8 @@ const EditTopicView = () => {
 
     useEffect(()=>{
         const topicId = window.location.href.split('/edit-topic/')[1]
-        fetch(`http://localhost:8080/topic/${topicId}`,{
-        headers:{
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${jwt}`
-        }
-        }).then((response)=>{
-            if(response.status === 200)
-                return response.json()
-        }).then((topic)=>{
+        fetchCall(`http://localhost:8080/topic/${topicId}`, 'GET', jwt, null, 'return-response-json')
+        .then((topic)=>{
             console.log(topic);
             setTopic(topic)
             setTitle(topic.title)
@@ -35,15 +29,8 @@ const EditTopicView = () => {
     const handleUpdate = (e) =>{
         e.preventDefault()
         const updateReq = { id, title, body }
-        fetch('http://localhost:8080/topic/edit-topic',{
-            headers: {
-                "Content-Type":  "application/json",
-                Authorization: `Bearer ${jwt}`
-            },
-            method: "POST",
-            body: JSON.stringify(updateReq)
-        }
-        ).then((response)=>{
+        fetchCall('http://localhost:8080/topic/edit-topic', 'POST', jwt, updateReq)
+        .then((response)=>{
             if(response.status === 200){
                 console.log("topic succesfylly edited");
                 navigate('/my-topics')

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import moment from "moment-timezone";
 import { Container, Paper, CircularProgress, Button } from '@mui/material'
 import { useNavigate } from "react-router-dom";
+import fetchCall from "../Services/FetchService";
 
 const ForumUserView = () => {
     const forumUserId = window.location.href.split('/forum-user/')[1]
@@ -15,51 +16,28 @@ const ForumUserView = () => {
     const [ requestSent, setRequestSent ] = useState(false)
 
     useEffect(()=>{
-        fetch(`http://localhost:8080/ForumUser/${forumUserId}`,{
-        headers:{
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${jwt}`
-        }
-        }).then((response)=>{
+        fetchCall(`http://localhost:8080/ForumUser/${forumUserId}`, 'GET', jwt)
+        .then((response)=>{
             if(response.status === 256)
                 navigate('/my-profile')
             if(response.status === 200)
                 return response.json()
         }).then((fUser)=>{
             setOtherForumUser(fUser)
-            fetch('http://localhost:8080/ForumUser/my-profile',{
-                headers: {
-                    "Content-Type":  "application/json",
-                    Authorization: `Bearer ${jwt}`
-                }
-                }
-                ).then((response)=>{
-                    if(response.status === 200)
-                        return response.json()
-                }).then((forumUser)=>{
-                    setForumUser(forumUser)
-                    forumUser.friends.map((friend)=>{
-                        if(String(friend.id) === forumUserId)
-                            setIsFriend(true)
-                    })
+            fetchCall('http://localhost:8080/ForumUser/my-profile', 'GET', jwt, null, 'return-response-json')
+            .then((forumUser)=>{
+                setForumUser(forumUser)
+                forumUser.friends.map((friend)=>{
+                    if(String(friend.id) === forumUserId)
+                        setIsFriend(true)
                 })
             })
+        })
     },[])
 
     const sendFriendRequest = () =>{
         const receiverId = { id: otherForumUser.fUserId }
-        
-        fetch(`http://localhost:8080/ForumUser/send-friend-request`,{
-            headers:{
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${jwt}`
-            },
-            method: 'POST',
-            body: JSON.stringify(receiverId)
-        }).then((response)=>{
-            if (response.status === 200)
-                return response.json
-        })
+        fetchCall(`http://localhost:8080/ForumUser/send-friend-request`, 'POST', jwt, receiverId, 'return-response-json')
     }
 
     return ( 

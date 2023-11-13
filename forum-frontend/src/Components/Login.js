@@ -2,6 +2,7 @@ import  { Button, TextField, Container, Box } from '@mui/material';
 import React, {  useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useLocalState } from '../Util/useLocalStorage';
+import fetchCall from '../Services/FetchService';
 
 const Login = () => {
     const [email, setEmail] = useState('')
@@ -13,31 +14,23 @@ const Login = () => {
 
     const handleLogin= (e)=>{
         e.preventDefault()
-
-    fetch('http://localhost:8080/ForumUser/login',{
-        headers: {
-            "Content-Type": "application/json"
-        },
-        method: 'POST',
-        body: JSON.stringify(loginRequest)
-    }).then((response) => {
-        if(response.status === 200)
-            return Promise.all([response.json(), response.headers])
-        else{
-            alert('bad credentials')
-            throw new Error("Try agains")
-        }
-    })
-    .then(([body, headers])=>{
-        setJwt(headers.get('authorization'))
-    })
-
-
-    .catch(
-        (error)=>{
-            console.error(error)
-        }
-    )
+        fetchCall('http://localhost:8080/ForumUser/login', 'POST', null, loginRequest)
+        .then((response) => {
+            if(response.status === 200)
+                return Promise.all([response.json(), response.headers])
+            else{
+                alert('bad credentials')
+                throw new Error("Try agains")
+            }
+        })
+        .then(([body, headers])=>{
+            setJwt(headers.get('authorization'))
+        })
+        .catch(
+            (error)=>{
+                console.error(error)
+            }
+        )
     }
     useEffect(()=>{
         if(jwt!==''){

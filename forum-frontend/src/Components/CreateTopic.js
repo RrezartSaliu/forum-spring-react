@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocalState } from "../Util/useLocalStorage";
 import { TextField, Box, Button, Container } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import fetchCall from "../Services/FetchService";
 
 const CreateTopic = () => {
     const [jwt, setJwt] = useLocalState('','jwt')
@@ -15,18 +16,9 @@ const CreateTopic = () => {
 
     const handleTopic = (e) =>{
         e.preventDefault()
-        console.log(jwt);
         const assignmentReq = { title, body }
-        fetch('http://localhost:8080/topic/create',{
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${jwt}`
-            },
-            method: 'POST',
-            body: JSON.stringify(assignmentReq)
-        }).then((response)=>{
-            if(response.status===200) return response.json();
-        }).then((data)=>{
+        fetchCall('http://localhost:8080/topic/create', 'POST', jwt, assignmentReq, 'return-response-json')
+        .then((data)=>{
             console.log(data)
             navigate('/my-topics')
         })

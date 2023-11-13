@@ -13,6 +13,7 @@ import Person2OutlinedIcon from '@mui/icons-material/Person2Outlined';
 import { useNavigate } from 'react-router-dom';
 import PeopleIcon from '@mui/icons-material/People';
 import { Badge } from '@mui/material';
+import fetchCall from '../Services/FetchService';
 
 
 
@@ -36,15 +37,8 @@ const ButtonAppBar = () =>{
   }
 
   const handleAcceptRequest = (senderId) => {
-    fetch('http://localhost:8080/ForumUser/accept-friend-request',{
-        headers: {
-            "Content-Type":  "application/json",
-            Authorization: `Bearer ${JSON.parse(localStorage.getItem('jwt'))}`
-        },
-        method: 'POST',
-        body: JSON.stringify({ id: senderId })
-    }
-    ).then((response)=>{
+    fetchCall('http://localhost:8080/ForumUser/accept-friend-request', 'POST', JSON.parse(localStorage.getItem('jwt')), { id: senderId })
+    .then((response)=>{
       if(response.status === 200){
         const updatedRequest = forumUser.receivedRequests.filter((req)=> req.id !== senderId)
         setForumUser({...forumUser, receivedRequests: updatedRequest})
@@ -53,15 +47,8 @@ const ButtonAppBar = () =>{
   }
 
   const handleDeclineRequest = (senderId) => {
-    fetch('http://localhost:8080/ForumUser/decline-friend-request',{
-        headers: {
-            "Content-Type":  "application/json",
-            Authorization: `Bearer ${JSON.parse(localStorage.getItem('jwt'))}`
-        },
-        method: 'POST',
-        body: JSON.stringify({ id: senderId })
-    }
-    ).then((response)=>{
+    fetchCall('http://localhost:8080/ForumUser/decline-friend-request', 'POST', JSON.parse(localStorage.getItem('jwt')), { id: senderId })
+    .then((response)=>{
       if(response.status === 200){
         const updatedRequest = forumUser.receivedRequests.filter((req)=> req.id !== senderId)
         setForumUser({...forumUser, receivedRequests: updatedRequest})
@@ -71,38 +58,19 @@ const ButtonAppBar = () =>{
 
   useEffect(()=>{
     const handleStorageChange = (e) => {
-    
-    
-      console.log(localStorage.getItem('jwt'))
       setUserLoggedIn(true)
-      fetch('http://localhost:8080/ForumUser/my-profile',{
-        headers: {
-            "Content-Type":  "application/json",
-            Authorization: `Bearer ${JSON.parse(localStorage.getItem('jwt'))}`
-        }
-    }
-    ).then((response)=>{
-        if(response.status === 200)
-            return response.json()
-    }).then((forumUser)=>{
-        console.log(forumUser);
-        setForumUser(forumUser)
-    })
-    };
+      fetchCall('http://localhost:8080/ForumUser/my-profile', 'GET', JSON.parse(localStorage.getItem('jwt')), null, 'return-response-json')
+      .then((forumUser)=>{
+          console.log(forumUser);
+          setForumUser(forumUser)
+      })
+      };
 
-    fetch('http://localhost:8080/ForumUser/my-profile',{
-        headers: {
-            "Content-Type":  "application/json",
-            Authorization: `Bearer ${JSON.parse(localStorage.getItem('jwt'))}`
-        }
-    }
-    ).then((response)=>{
-        if(response.status === 200)
-            return response.json()
-    }).then((forumUser)=>{
-        console.log(forumUser);
-        setForumUser(forumUser)
-    })
+      fetchCall('http://localhost:8080/ForumUser/my-profile', 'GET', JSON.parse(localStorage.getItem('jwt')), null, 'return-response-json')
+      .then((forumUser)=>{
+          console.log(forumUser);
+          setForumUser(forumUser)
+      })
 
     window.addEventListener('storage', handleStorageChange);
 
