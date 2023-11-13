@@ -17,7 +17,7 @@ const fetchCall = (url, requestMethod, jwt, requestBody, normalResponseJson) => 
     if(normalResponseJson === 'return-response-json')
         return fetch(url, fetchData).then((response)=>{
             if(response.status === 200)
-                return response.json
+                return response.json()
         })
 
     return fetch(url, fetchData)

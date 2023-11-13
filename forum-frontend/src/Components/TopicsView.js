@@ -77,7 +77,7 @@ const TopicsView = () => {
             
         })
 
-        fetchCall(`http://localhost:8080/comment/get-comments-for-topic/${topicId}`, 'GET', jwt, 'return-response-json')
+        fetchCall(`http://localhost:8080/comment/get-comments-for-topic/${topicId}`, 'GET', jwt, null, 'return-response-json')
         .then((comments)=>{
             const pushArray = []
             comments.map((comment)=>{
@@ -96,7 +96,10 @@ const TopicsView = () => {
                 fetchCall(`http://localhost:8080/topic/${topic.topicId}`, 'GET', jwt, null, 'return-response-json')
                 .then((topic)=>{
                     setTopic(topic)
-                })
+                }).then(fetchCall('http://localhost:8080/ForumUser/my-profile', 'GET', jwt, null, 'return-response-json')
+                .then((forumUser)=>{
+                    setForumUser(forumUser)   
+                }))
             }
         })
     }
@@ -115,7 +118,7 @@ const TopicsView = () => {
                                 forumUser.fUserId === topic.author.fUserId?<Link to={`/edit-topic/${topic.topicId}`}>Edit Topic</Link>:<></>
                             }
                         </div>
-                        { forumUser.likedTopics.map((topic)=>(topic.id)).includes(topic.topicId)?<Button onClick={()=>{}}><FavoriteIcon/></Button>:<Button onClick={()=>{handleLike('like')}}><FavoriteBorderIcon/></Button> }
+                        { forumUser.likedTopics.map((topic)=>(topic.id)).includes(topic.topicId)?<Button onClick={()=>{handleLike('unlike')}}><FavoriteIcon/></Button>:<Button onClick={()=>{handleLike('like')}}><FavoriteBorderIcon/></Button> }
                     </Container>
                 </Paper>
                 
