@@ -31,7 +31,12 @@ const TopicsView = () => {
         .then((response)=>{
             fetchCall(`http://localhost:8080/comment/get-comments-for-topic/${topicId}`, 'GET', jwt, null, 'return-response-json')
             .then((comments)=>{
-            setComments(comments)
+                const pushArray = []
+                comments.map((comment)=>{
+                    pushArray.push({id: comment.id, value: ''})
+                })
+                setComments(comments)
+                setReplyValue(pushArray)
             })
         })
         }
@@ -105,7 +110,7 @@ const TopicsView = () => {
     }
 
     return ( 
-        <div style={{ padding: '15vh' }}>
+        <div style={{ padding: '10vh' }}>
             {topic && forumUser && comments?
             (<div>
                 <Paper variant='outlined' style={{ border: '3px solid #506c69', padding: '16px', backgroundColor:'#f1f8fc'}}>
@@ -119,6 +124,7 @@ const TopicsView = () => {
                             }
                         </div>
                         { forumUser.likedTopics.map((topic)=>(topic.id)).includes(topic.topicId)?<Button onClick={()=>{handleLike('unlike')}}><FavoriteIcon/></Button>:<Button onClick={()=>{handleLike('like')}}><FavoriteBorderIcon/></Button> }
+                        { topic.likes }
                     </Container>
                 </Paper>
                 
@@ -150,7 +156,7 @@ const TopicsView = () => {
                         </Accordion>
                         ))
                         }   
-                        <form onSubmit={handleComment}>
+                        <form onSubmit={(e)=>handleComment(e)}>
                             <input type="text" value={commentValue} onChange={(e)=>setCommentValue(e.target.value)}></input>
                             <button type="submit">add comment</button>
                         </form>

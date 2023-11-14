@@ -2,6 +2,7 @@ package com.example.forumbackend.controller;
 
 import com.example.forumbackend.dto.ForumUserResponseDTO;
 import com.example.forumbackend.dto.TopicResponseDTO;
+import com.example.forumbackend.model.Category;
 import com.example.forumbackend.model.ForumUser;
 import com.example.forumbackend.model.Topic;
 import com.example.forumbackend.service.ForumUserService;
@@ -11,11 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import java.util.Date;
-import java.util.Objects;
+import java.util.*;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -32,6 +29,7 @@ public class TopicController {
         topic1.setBody(topic.getBody());
         topic1.setTitle(topic.getTitle());
         topic1.setLikes(0);
+        topic1.setCategory(topic.getCategory());
         topic1.setCreationDate(new Date());
         topicService.addNewTopic(topic1, forumUser);
 
@@ -105,4 +103,15 @@ public class TopicController {
         return ResponseEntity.ok(null);
     }
 
+    @GetMapping("/get-categories")
+    public ResponseEntity<?> getCategories(){
+        return ResponseEntity.ok(topicService.getCategories());
+    }
+
+    @GetMapping("/topics-by-category/{category}")
+    public ResponseEntity<?> getTopicsByCategory(@PathVariable Category category){
+        if (Arrays.stream(Category.values()).toList().contains(category))
+            return ResponseEntity.ok(topicService.getAllByCategory(category));
+        return ResponseEntity.ok().build();
+    }
 }

@@ -9,32 +9,30 @@ import { useEffect, useState } from 'react';
 import { useLocalState } from '../Util/useLocalStorage';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import Person2OutlinedIcon from '@mui/icons-material/Person2Outlined';
-import { useNavigate } from 'react-router-dom';
 import PeopleIcon from '@mui/icons-material/People';
 import { Badge } from '@mui/material';
 import fetchCall from '../Services/FetchService';
+import '../css/navbar.css'
+import ProfileMenu from './NavbarComponents/ProfileMenu';
+import CategoriesMenu from './NavbarComponents/CategoriesMenu';
 
 
 
 const ButtonAppBar = () =>{
   const [jwt, setJwt] = useLocalState('','jwt')
   const [userLoggedIn, setUserLoggedIn] = useState(jwt!=="");
-  const navigate = useNavigate()
-  const [anchorEl, setAnchorEl] = React.useState(null);
   const [anchorElFriendReq, setAnchorElFriendReq] = React.useState(null)
-  const open = Boolean(anchorEl);
   const openFriendRequest = Boolean(anchorElFriendReq)
   const [forumUser, setForumUser] = useState(null)
 
-
-  const handleClickProfile = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+  const updateLoggedInUser = (newValue) =>{
+    setUserLoggedIn(newValue)
+  }
 
   const handleClickFriendReq = (event) => {
     setAnchorElFriendReq(event.currentTarget)
   }
+
 
   const handleAcceptRequest = (senderId) => {
     fetchCall('http://localhost:8080/ForumUser/accept-friend-request', 'POST', JSON.parse(localStorage.getItem('jwt')), { id: senderId })
@@ -45,6 +43,7 @@ const ButtonAppBar = () =>{
     }}
     )
   }
+
 
   const handleDeclineRequest = (senderId) => {
     fetchCall('http://localhost:8080/ForumUser/decline-friend-request', 'POST', JSON.parse(localStorage.getItem('jwt')), { id: senderId })
@@ -72,13 +71,15 @@ const ButtonAppBar = () =>{
           setForumUser(forumUser)
       })
 
+
     window.addEventListener('storage', handleStorageChange);
 
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
     
-  },[anchorEl])
+  },[])
+
 
  
   return (
@@ -86,20 +87,23 @@ const ButtonAppBar = () =>{
       <AppBar position="fixed" style={{ background: '#506c69'}} >
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            <Link to='/' style={{ color: 'white', textDecoration: 'none', fontFamily: 'Candara'}}>
+            <Link className='navbar-font' to='/' style={{ color: 'white', textDecoration: 'none' }}>
               ThreadTalk
             </Link>
           </Typography>
           { !userLoggedIn?(<div>
             <Link to="/login" style={{ color: 'white' }}>  
-              <Button color="inherit" style={{fontFamily: 'Candara'}}>Login</Button>
+              <Button color="inherit" className='navbar-font'>Login</Button>
             </Link>
             <Link to="/signup" style={{ color: 'white' }}>  
-              <Button color="inherit" style={{ fontFamily: 'Candara'}}>Sign Up</Button>
+              <Button color="inherit" className='navbar-font'>Sign Up</Button>
             </Link></div>)
             :<div>
-              { forumUser &&
+              { forumUser && 
               <>
+            
+              <CategoriesMenu/>
+
               <Button style={{ color: 'white'}} 
               id="friendRequest-button"
               aria-controls={openFriendRequest ? 'friendReq-menu' : undefined}
@@ -114,6 +118,8 @@ const ButtonAppBar = () =>{
               </Badge>
             
               </Button>
+              
+
               <Menu
               id="friendReq-menu"
               anchorEl={anchorElFriendReq}
@@ -127,7 +133,7 @@ const ButtonAppBar = () =>{
               
               { forumUser.receivedRequests.length !== 0 ? (forumUser.receivedRequests.map((req)=>(
               <MenuItem key={req.id} onClick={()=>{
-              }} style={{ fontFamily: 'Candara' }}>{req.firstName} {req.lastName}
+              }} className='navbar-font'>{req.firstName} {req.lastName}
               <Button onClick={()=>handleAcceptRequest(req.id)}>Accept</Button><Button onClick={()=>handleDeclineRequest(req.id)}>Decline</Button>
               </MenuItem>))):<div>No friend requests</div>
               }
@@ -135,43 +141,10 @@ const ButtonAppBar = () =>{
               </>
               }
               <Link to="/createTopic" style={{ color: 'white' }}>  
-              <Button color="inherit" style={{ fontFamily: 'Candara' }}>Create Topic</Button>
+              <Button color="inherit"><div className='navbar-font'>Create Topic</div></Button>
             </Link>
             
-            <Button
-              id="basic-button"
-              aria-controls={open ? 'basic-menu' : undefined}
-              aria-haspopup="true"
-              aria-expanded={open ? 'true' : undefined}
-              onClick={handleClickProfile}
-              color='inherit'
-            >
-              <Person2OutlinedIcon></Person2OutlinedIcon>
-            </Button>
-            <Menu
-              id="basic-menu"
-              anchorEl={anchorEl}
-              open={open}
-              onClose={()=>setAnchorEl(null)}
-              MenuListProps={{
-                'aria-labelledby': 'basic-button',
-              }}
-            >
-              <MenuItem onClick={()=>{
-                setAnchorEl(null)
-                navigate('/my-profile')
-              }} style={{ fontFamily: 'Candara' }}>Profile</MenuItem>
-              <MenuItem onClick={()=>{
-                  setAnchorEl(null)
-                  navigate('/my-topics')
-              }} style={{ fontFamily: 'Candara',  }}>My Topics</MenuItem>
-              <MenuItem onClick={()=>{
-                localStorage.setItem('jwt',JSON.stringify(""))
-                setUserLoggedIn(false)  
-                setAnchorEl(null)     
-                navigate("/")         
-              }} style={{ fontFamily: 'Candara' }}>Logout</MenuItem>
-            </Menu>
+              <ProfileMenu userLoggedIn={userLoggedIn} updateLoggedInUser={updateLoggedInUser}/>
 
             </div>
             }

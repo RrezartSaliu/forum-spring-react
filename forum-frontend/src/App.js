@@ -12,6 +12,7 @@ import TopicsView from './Components/TopicsView';
 import ForumUserView from './Components/ForumUserView'
 import EditProfileView from './Components/EditProfileView';
 import EditTopicView from './Components/EditTopicView';
+import TopicsByCategory from './Components/TopicsByCategory';
 
 function App() {
   return (
@@ -57,6 +58,11 @@ function App() {
           <Route path='/edit-topic/:id' element={
             <PrivateRoute>
               <EditTopicView/>
+            </PrivateRoute>
+          }/>
+          <Route path='/category-topics/:category' element={
+            <PrivateRoute>
+              <TopicsByCategory/>
             </PrivateRoute>
           }/>
           <Route path="/signup" element={<Signup/>}/>

@@ -1,5 +1,6 @@
 package com.example.forumbackend.service;
 
+import com.example.forumbackend.model.Category;
 import com.example.forumbackend.model.ForumUser;
 import com.example.forumbackend.model.Topic;
 import java.util.List;
@@ -11,4 +12,6 @@ public interface TopicService {
     Topic deleteTopic(Long id);
     List<Topic> getAllByForumUser (ForumUser forumUser);
     Topic updateTopic(Long id, String title, String body);
+    List<Category> getCategories();
+    List<Topic> getAllByCategory(Category category);
 }

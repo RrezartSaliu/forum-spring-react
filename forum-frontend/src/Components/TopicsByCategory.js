@@ -1,35 +1,37 @@
 import { useEffect, useState } from "react";
-import { useLocalState } from "../Util/useLocalStorage";
-import { Link } from "react-router-dom";
-import { Paper, Container, CircularProgress, Typography, Card, CardContent, Grid, Button } from "@mui/material";
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
-import SendIcon from '@mui/icons-material/Send';
-import FavoriteIcon from '@mui/icons-material/Favorite';
 import fetchCall from "../Services/FetchService";
+import { useLocalState } from "../Util/useLocalStorage";
+import { CircularProgress, Button, Typography, CardContent, Card, Grid, Container, Paper } from "@mui/material";
+import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import { Link, useParams } from "react-router-dom";
+import SendIcon from '@mui/icons-material/Send';
 
-const MyTopics = () => {
-    const [jwt, setJwt] = useLocalState('', 'jwt')
-    const [topics, setTopics] = useState(null)
-    const [forumUser, setForumUser ] = useState(null)
-    const [topicsWithLike, setTopicsWithLike ] = useState(null)
+const TopicsByCategory = () => {
+    const { category } = useParams()
+    const [ jwt, setJwt] = useLocalState('', 'jwt');
+    const [ topics, setTopics ] = useState(null)
+    const [ topicsWithLike, setTopicsWithLike ] = useState(null)
+    const [ forumUser, setForumUser ] = useState(null)
 
     useEffect(()=>{
-        fetchCall('http://localhost:8080/topic/user-topics', 'GET', jwt, null, 'return-response-json')
-        .then((topics)=>{
+        if(category)
+        fetchCall(`http://localhost:8080/topic/topics-by-category/${category}`, 'GET', jwt, null, 'return-response-json').then((topics)=>{
             setTopics(topics)
+            
             fetchCall('http://localhost:8080/ForumUser/my-profile', 'GET', jwt, null, 'return-response-json')
             .then((forumUser)=>{
                 setForumUser(forumUser)
                 const likedTopicIds = forumUser.likedTopics.map((topic)=>topic.id)
                 const topicsWithLikeC = topics.map((topic)=>({
                     ...topic,
-                    isLiked: likedTopicIds.includes(topic.topicId)
+                    isLiked: likedTopicIds.includes(topic.id)
                 }))
                 setTopicsWithLike(topicsWithLikeC)
             })
         })
-    },[])
+    },[category])
 
     const handleLike = (likedTopic, action)=>{
         var calc = 0
@@ -39,7 +41,7 @@ const MyTopics = () => {
         if(action ==='unlike'){
             calc--
         }
-        fetchCall(`http://localhost:8080/topic/add-topic-like/${likedTopic.topicId}/${action}`, 'GET', jwt)
+        fetchCall(`http://localhost:8080/topic/add-topic-like/${likedTopic.id}/${action}`, 'GET', jwt)
         .then((response)=>{
             if(response.status === 200){
                 const updatedTopics = topicsWithLike.map((topic)=>
@@ -52,16 +54,17 @@ const MyTopics = () => {
 
     return ( 
         <div style={{ padding: '10vh' }}>
-            { topicsWithLike? ( 
+            
+            { topicsWithLike ? ( 
                 <Paper variant='outlined' style={{ border: '3px solid #506c69', padding: '16px', backgroundColor:'#f1f8fc'}}>
                     <Container style={{ backgroundColor:'#f1f8fc'}}>
                         <Grid container spacing={2}>
                             
                                 { topicsWithLike.length !== 0 ? (topicsWithLike.map((topic)=>(
-                                    <Grid key={topic.topicId} item xs={12} sm={6} md={4}>
+                                    <Grid key={topic.id} item xs={12} sm={6} md={4}>
                                     <Card style={{ height: '100%' }}>
                                       <CardContent style={{ height: '100%', overflowY: 'auto', display: 'flex', flexDirection: 'column'}}>
-                                        <Link to={`/topics/${topic.topicId}`} style={{ textDecoration: 'none'}}>
+                                        <Link to={`/topics/${topic.id}`} style={{ textDecoration: 'none'}}>
                                             <Typography variant="h5">{topic.title}</Typography>
                                             <Typography style={{ wordWrap: 'break-word' }} >{topic.body}</Typography>
                                         </Link>
@@ -86,8 +89,9 @@ const MyTopics = () => {
             :
             <CircularProgress color="inherit" />
         }
+
         </div>
-    );
+     );
 }
  
-export default MyTopics;
+export default TopicsByCategory;

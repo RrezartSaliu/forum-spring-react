@@ -1,5 +1,6 @@
 package com.example.forumbackend.service;
 
+import com.example.forumbackend.model.Category;
 import com.example.forumbackend.model.ForumUser;
 
 import java.util.Date;
