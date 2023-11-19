@@ -37,12 +37,17 @@ public class ForumUser implements UserDetails {
     )
     @JsonIgnore
     private Set<Topic> likedTopics;
-    @OneToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "friend_requests",
+            joinColumns = @JoinColumn(name = "sender_id"),
+            inverseJoinColumns = @JoinColumn(name = "receiver_id")
+    )
     @JsonIgnore
-    private List<ForumUser> sentFriendRequest;
-    @OneToMany(fetch = FetchType.EAGER)
+    private Set<ForumUser> sentFriendRequest = new HashSet<>();
+    @ManyToMany(mappedBy = "sentFriendRequest", fetch = FetchType.EAGER)
     @JsonIgnore
-    private List<ForumUser> receivedFriendRequest;
+    private Set<ForumUser> receivedFriendRequest = new HashSet<>();
 
     public ForumUser(Long id, String firstName, String lastName, String emailAddress, String password, Date dateOfBirth, List<ForumUser> friends, List<Comment> comments, List<Topic> topics) {
         this.id = id;
@@ -80,19 +85,19 @@ public class ForumUser implements UserDetails {
         receivedFriendRequest.add(forumUser);
     }
 
-    public List<ForumUser> getSentFriendRequest() {
+    public Set<ForumUser> getSentFriendRequest() {
         return sentFriendRequest;
     }
 
-    public void setSentFriendRequest(List<ForumUser> sentFriendRequest) {
+    public void setSentFriendRequest(Set<ForumUser> sentFriendRequest) {
         this.sentFriendRequest = sentFriendRequest;
     }
 
-    public List<ForumUser> getReceivedFriendRequest() {
+    public Set<ForumUser> getReceivedFriendRequest() {
         return receivedFriendRequest;
     }
 
-    public void setReceivedFriendRequest(List<ForumUser> receivedFriendRequest) {
+    public void setReceivedFriendRequest(Set<ForumUser> receivedFriendRequest) {
         this.receivedFriendRequest = receivedFriendRequest;
     }
 

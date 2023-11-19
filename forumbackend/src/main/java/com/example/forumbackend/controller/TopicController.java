@@ -110,8 +110,25 @@ public class TopicController {
 
     @GetMapping("/topics-by-category/{category}")
     public ResponseEntity<?> getTopicsByCategory(@PathVariable Category category){
-        if (Arrays.stream(Category.values()).toList().contains(category))
-            return ResponseEntity.ok(topicService.getAllByCategory(category));
+
+            if (Arrays.stream(Category.values()).toList().contains(category))
+                return ResponseEntity.ok(topicService.getAllByCategory(category));
+
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/topics-by-category/{category}/{order}")
+    public ResponseEntity<?> getTopicsByCategoryWithOrder(@PathVariable Category category, @PathVariable String order){
+
+        if (Arrays.stream(Category.values()).toList().contains(category))
+            return ResponseEntity.ok(topicService.getAllByCategorySorted(category,order));
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/latest-topics")
+    public ResponseEntity<?> getLatestAuthorTopics(@RequestBody Map<String, Object> req){
+
+        return ResponseEntity.ok(topicService.getLatestAuthorActivity(Long.valueOf(String.valueOf(req.get("forumUserId"))), (Integer) req.get("page"), (Integer) req.get("size")));
     }
 }

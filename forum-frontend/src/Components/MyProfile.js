@@ -37,7 +37,7 @@ const MyProfile = () => {
                             ))}
                         </div>
                     </div>
-                    ):(<div></div>)}
+                    ):(<></>)}
                     {
                 forumUser?(
                     

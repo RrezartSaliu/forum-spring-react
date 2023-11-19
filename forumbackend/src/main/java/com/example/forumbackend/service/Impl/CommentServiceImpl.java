@@ -3,8 +3,11 @@ package com.example.forumbackend.service.Impl;
 import com.example.forumbackend.model.Comment;
 import com.example.forumbackend.model.Topic;
 import com.example.forumbackend.repository.CommentRepository;
+import com.example.forumbackend.repository.ForumUserRepository;
 import com.example.forumbackend.repository.TopicRepository;
 import com.example.forumbackend.service.CommentService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -15,10 +18,12 @@ import java.util.List;
 public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final TopicRepository topicRepository;
+    private final ForumUserRepository forumUserRepository;
 
-    public CommentServiceImpl(CommentRepository commentRepository, TopicRepository topicRepository) {
+    public CommentServiceImpl(CommentRepository commentRepository, TopicRepository topicRepository, ForumUserRepository forumUserRepository) {
         this.commentRepository = commentRepository;
         this.topicRepository = topicRepository;
+        this.forumUserRepository = forumUserRepository;
     }
 
     @Override
@@ -64,4 +69,5 @@ public class CommentServiceImpl implements CommentService {
         commentRepository.save(parent);
         return comment1;
     }
+
 }

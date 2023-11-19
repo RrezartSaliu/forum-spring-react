@@ -19,7 +19,8 @@ public class ForumUserResponseDTO {
     private String bio;
     private List<ForumUser> friends;
     private Set<Topic> likedTopics;
-    private List<ForumUser> receivedRequests;
+    private Set<ForumUser> receivedRequests;
+    private Set<ForumUser> sentRequests;
 
 
     public ForumUserResponseDTO(Long fUserId, String firstName, String lastName, String emailAddress, Date dateOfBirth, List<ForumUser> friends) {
@@ -31,11 +32,19 @@ public class ForumUserResponseDTO {
         this.friends = friends;
     }
 
-    public List<ForumUser> getReceivedRequests() {
+    public Set<ForumUser> getSentRequests() {
+        return sentRequests;
+    }
+
+    public void setSentRequests(Set<ForumUser> sentRequests) {
+        this.sentRequests = sentRequests;
+    }
+
+    public Set<ForumUser> getReceivedRequests() {
         return receivedRequests;
     }
 
-    public void setReceivedRequests(List<ForumUser> receivedRequests) {
+    public void setReceivedRequests(Set<ForumUser> receivedRequests) {
         this.receivedRequests = receivedRequests;
     }
 

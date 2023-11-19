@@ -1,18 +1,21 @@
 import { useEffect, useState } from "react";
 import { useLocalState } from "../Util/useLocalStorage";
 import { Link } from "react-router-dom";
-import { Paper, Container, CircularProgress, Typography, Card, CardContent, Grid, Button } from "@mui/material";
+import { Paper, Container, CircularProgress, Typography, Card, CardContent, Grid, Button, TextField } from "@mui/material";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import SendIcon from '@mui/icons-material/Send';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import fetchCall from "../Services/FetchService";
+import MessageWindow from "./MessageWindow";
 
 const MyTopics = () => {
     const [jwt, setJwt] = useLocalState('', 'jwt')
     const [topics, setTopics] = useState(null)
     const [forumUser, setForumUser ] = useState(null)
     const [topicsWithLike, setTopicsWithLike ] = useState(null)
+    const [ showMessageWindow, setShowMessageWindow ] = useState(false)
+    const [ topicMessage, setTopicMessage ] = useState('')
 
     useEffect(()=>{
         fetchCall('http://localhost:8080/topic/user-topics', 'GET', jwt, null, 'return-response-json')
@@ -31,6 +34,11 @@ const MyTopics = () => {
         })
     },[])
 
+    const closeMessageWindow = () =>{
+        setShowMessageWindow(false)
+    }
+
+
     const handleLike = (likedTopic, action)=>{
         var calc = 0
         if(action === 'like'){
@@ -46,13 +54,18 @@ const MyTopics = () => {
                     topic.topicId === likedTopic.topicId ? {...topic, isLiked: !likedTopic.isLiked, likes: likedTopic.likes+calc }:topic
                 )
                 setTopicsWithLike(updatedTopics)
+                console.log(updatedTopics);
             }
         })
     }
 
     return ( 
         <div style={{ padding: '10vh' }}>
-            { topicsWithLike? ( 
+            { showMessageWindow &&
+            <MessageWindow forumUser={forumUser} closeMessageWindow={closeMessageWindow} topicId={topicMessage} />
+            }   
+            { 
+            topicsWithLike? ( 
                 <Paper variant='outlined' style={{ border: '3px solid #506c69', padding: '16px', backgroundColor:'#f1f8fc'}}>
                     <Container style={{ backgroundColor:'#f1f8fc'}}>
                         <Grid container spacing={2}>
@@ -72,7 +85,9 @@ const MyTopics = () => {
                                                 }
                                                 {topic.likes}
                                                 <Button><ChatBubbleOutlineIcon/></Button>
-                                                <Button><SendIcon/></Button>
+                                                <Button onClick={()=>{
+                                                    setTopicMessage(topic.topicId)
+                                                    setShowMessageWindow(true)}}><SendIcon/></Button>
                                             </Typography>
                                         </div>
                                       </CardContent>

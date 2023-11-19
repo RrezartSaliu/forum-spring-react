@@ -3,6 +3,9 @@ package com.example.forumbackend.service;
 import com.example.forumbackend.model.Category;
 import com.example.forumbackend.model.ForumUser;
 import com.example.forumbackend.model.Topic;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 
 public interface TopicService {
@@ -14,4 +17,6 @@ public interface TopicService {
     Topic updateTopic(Long id, String title, String body);
     List<Category> getCategories();
     List<Topic> getAllByCategory(Category category);
+    List<Topic> getAllByCategorySorted (Category category, String order);
+    Page<Topic> getLatestAuthorActivity (Long forumUserId, Integer page, Integer size);
 }

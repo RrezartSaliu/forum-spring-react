@@ -39,8 +39,8 @@ public class ForumUserServiceImpl implements ForumUserService {
         forumUser.setTopics(new ArrayList<>());
         forumUser.setComments(new ArrayList<>());
         forumUser.setLikedTopics(new HashSet<>());
-        forumUser.setSentFriendRequest(new ArrayList<>());
-        forumUser.setReceivedFriendRequest(new ArrayList<>());
+        forumUser.setSentFriendRequest(new HashSet<>());
+        forumUser.setReceivedFriendRequest(new HashSet<>());
         ForumUser fUser = forumUserRepository.save(forumUser);
         authority.setForumUser(fUser);
         authorityRepository.save(authority);

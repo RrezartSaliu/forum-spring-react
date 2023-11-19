@@ -3,20 +3,23 @@ package com.example.forumbackend.service.Impl;
 import com.example.forumbackend.model.Category;
 import com.example.forumbackend.model.ForumUser;
 import com.example.forumbackend.model.Topic;
+import com.example.forumbackend.repository.ForumUserRepository;
 import com.example.forumbackend.repository.TopicRepository;
 import com.example.forumbackend.service.TopicService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class TopicServiceImpl implements TopicService {
     private final TopicRepository topicRepository;
+    private final ForumUserRepository forumUserRepository;
 
-    public TopicServiceImpl(TopicRepository topicRepository) {
+    public TopicServiceImpl(TopicRepository topicRepository, ForumUserRepository forumUserRepository) {
         this.topicRepository = topicRepository;
+        this.forumUserRepository = forumUserRepository;
     }
 
     @Override
@@ -66,5 +69,30 @@ public class TopicServiceImpl implements TopicService {
         return topicRepository.getAllByCategory(category);
     }
 
+    @Override
+    public List<Topic> getAllByCategorySorted(Category category, String order) {
+
+        switch (order){
+            case "most-liked": {
+                List<Topic> byLikes = topicRepository.getAllByCategoryOrderByLikes(category);
+                Collections.reverse(byLikes);
+                return byLikes;
+            }
+            case "oldest": return topicRepository.getAllByCategoryOrderByCreationDate(category);
+            case "newest": {
+                List<Topic> byDate = topicRepository.getAllByCategoryOrderByCreationDate(category);
+                Collections.reverse(byDate);
+                return byDate;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Page<Topic> getLatestAuthorActivity(Long forumUserId, Integer page, Integer size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return topicRepository.findAllByAuthorOrderByCreationDateDesc(forumUserRepository.findById(forumUserId).orElseThrow(), pageRequest);
+
+    }
 
 }

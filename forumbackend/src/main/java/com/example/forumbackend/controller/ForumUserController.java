@@ -6,6 +6,7 @@ import com.example.forumbackend.dto.TopicResponseDTO;
 import com.example.forumbackend.model.ForumUser;
 import com.example.forumbackend.model.Topic;
 import com.example.forumbackend.service.ForumUserService;
+import com.example.forumbackend.service.TopicService;
 import com.example.forumbackend.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -85,6 +87,7 @@ public class ForumUserController {
         forumUserResponseDTO.setLikedTopics(forumUser.getLikedTopics());
         forumUserResponseDTO.setBio(forumUser.getBio());
         forumUserResponseDTO.setReceivedRequests(forumUser.getReceivedFriendRequest());
+        forumUserResponseDTO.setSentRequests(forumUser.getSentFriendRequest());
         return ResponseEntity.ok(forumUserResponseDTO);
     }
 
@@ -126,4 +129,5 @@ public class ForumUserController {
 
         return ResponseEntity.ok(null);
     }
+
 }
