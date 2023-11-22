@@ -25,7 +25,6 @@ const CreateTopic = () => {
         if(title.trim() !== '' && body.trim() !== '' && category.trim() !== '')
             fetchCall('http://localhost:8080/topic/create', 'POST', jwt, assignmentReq, 'return-response-json')
             .then((data)=>{
-                console.log(data)
                 navigate('/my-topics')
             })
     }

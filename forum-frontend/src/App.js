@@ -40,12 +40,12 @@ function App() {
               <MyProfile/>
             </PrivateRoute>
           }/>
-          <Route path='/topics/:id' element={
+          <Route path='/topics/:topicId' element={
             <PrivateRoute>
               <TopicsView/>
             </PrivateRoute>
           }/>
-          <Route path='/forum-user/:id' element={
+          <Route path='/forum-user/:forumUserId' element={
             <PrivateRoute>
               <ForumUserView/>
             </PrivateRoute>
@@ -55,7 +55,7 @@ function App() {
               <EditProfileView/>
             </PrivateRoute>
           }/>
-          <Route path='/edit-topic/:id' element={
+          <Route path='/edit-topic/:topicId' element={
             <PrivateRoute>
               <EditTopicView/>
             </PrivateRoute>

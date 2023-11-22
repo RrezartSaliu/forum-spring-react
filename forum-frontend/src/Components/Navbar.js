@@ -34,14 +34,12 @@ const ButtonAppBar = () =>{
       setUserLoggedIn(true)
       fetchCall('http://localhost:8080/ForumUser/my-profile', 'GET', JSON.parse(localStorage.getItem('jwt')), null, 'return-response-json')
       .then((forumUser)=>{
-          console.log(forumUser);
           setForumUser(forumUser)
       })
       };
 
       fetchCall('http://localhost:8080/ForumUser/my-profile', 'GET', JSON.parse(localStorage.getItem('jwt')), null, 'return-response-json')
       .then((forumUser)=>{
-          console.log(forumUser);
           setForumUser(forumUser)
       })
 

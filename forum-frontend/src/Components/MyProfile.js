@@ -18,7 +18,6 @@ const MyProfile = () => {
     useEffect(()=>{
         fetchCall('http://localhost:8080/ForumUser/my-profile', 'GET', jwt, null, 'return-response-json')
         .then((forumUser)=>{
-            console.log(forumUser);
             setForumUser(forumUser)
         })
         },[])

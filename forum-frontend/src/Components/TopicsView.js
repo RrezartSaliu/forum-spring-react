@@ -1,6 +1,6 @@
 import { useLocalState } from "../Util/useLocalStorage";
 import { useEffect, useState } from "react";
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { CircularProgress, Paper, Container, Typography, Accordion, AccordionDetails, AccordionSummary, Button  } from "@mui/material";
 import { ExpandMore } from "@mui/icons-material";
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -10,19 +10,19 @@ import fetchCall from "../Services/FetchService";
 
 
 const TopicsView = () => {
-
+    const { topicId } = useParams();
     const [ jwt, setJwt ] = useLocalState('', 'jwt')
     const [ topic, setTopic ] = useState(null)
     const [ forumUser, setForumUser] = useState(null)
     const [ commentValue, setCommentValue] = useState('')
     const [ comments, setComments ] = useState(null)
     const [ replyValue, setReplyValue ] = useState([])
+    
 
     const handleComment = (e) =>{
         e.preventDefault()
 
         if (!(commentValue.trim()==='')){
-        const topicId = window.location.href.split('/topics/')[1]
         const commentReqBody = commentValue
         const topicReqId = topicId   
         setCommentValue('')
@@ -52,7 +52,6 @@ const TopicsView = () => {
     const addReply = (e, replyObj) => { 
         e.preventDefault()
         if (!(replyObj.value.trim()==='')){
-        const topicId = window.location.href.split('/topics/')[1]
         const replyReqBody = replyObj.value
         const commentId = replyObj.id   
         setReplyValue((prevComments) =>
@@ -71,27 +70,27 @@ const TopicsView = () => {
     }
 
     useEffect(()=>{
-        const topicId = window.location.href.split('/topics/')[1]
-        fetchCall(`http://localhost:8080/topic/${topicId}`, 'GET', jwt, null, 'return-response-json')
-        .then((topic)=>{
-            setTopic(topic)
-        })
         fetchCall('http://localhost:8080/ForumUser/my-profile', 'GET', jwt, null, 'return-response-json')
         .then((forumUser)=>{
             setForumUser(forumUser)
-            
         })
-
-        fetchCall(`http://localhost:8080/comment/get-comments-for-topic/${topicId}`, 'GET', jwt, null, 'return-response-json')
-        .then((comments)=>{
-            const pushArray = []
-            comments.map((comment)=>{
-                pushArray.push({id: comment.id, value: ''})
+        if(topicId){
+            fetchCall(`http://localhost:8080/topic/${topicId}`, 'GET', jwt, null, 'return-response-json')
+            .then((topic)=>{
+                setTopic(topic)
             })
-            setComments(comments)
-            setReplyValue(pushArray)
-        })
-    },[])
+            
+            fetchCall(`http://localhost:8080/comment/get-comments-for-topic/${topicId}`, 'GET', jwt, null, 'return-response-json')
+            .then((comments)=>{
+                const pushArray = []
+                comments.map((comment)=>{
+                    pushArray.push({id: comment.id, value: ''})
+                })
+                setComments(comments)
+                setReplyValue(pushArray)
+            })
+        }
+    },[topicId])
 
 
     const handleLike = (action)=>{

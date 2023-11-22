@@ -16,7 +16,7 @@ public class Message {
     @ManyToOne
     @JoinColumn(name = "sender_id")
     private ForumUser sender;
-
+    private Boolean read;
     @ManyToOne
     @JoinColumn(name = "receiver_id")
     private ForumUser receiver;
@@ -24,10 +24,19 @@ public class Message {
     public Message(String link, String content) {
         this.link = link;
         this.content = content;
+        this.read = false;
     }
 
     public Message() {
 
+    }
+
+    public Boolean getRead() {
+        return read;
+    }
+
+    public void setRead(Boolean read) {
+        this.read = read;
     }
 
     public Date getDate() {

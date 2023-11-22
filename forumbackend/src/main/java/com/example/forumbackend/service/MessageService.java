@@ -7,4 +7,5 @@ import java.util.List;
 public interface MessageService {
     List<Message> getMessagesForReceiver(ForumUser forumUser);
     Message createMessage(Message message);
+    void readMessage(Long id);
 }

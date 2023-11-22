@@ -87,7 +87,6 @@ const TopicsByCategory = () => {
                     topic.id === likedTopic.id ? {...topic, isLiked: !likedTopic.isLiked, likes: likedTopic.likes+calc }:topic
                 )
                 setTopicsWithLike(updatedTopics)
-                console.log(updatedTopics);
             }
         })
     }

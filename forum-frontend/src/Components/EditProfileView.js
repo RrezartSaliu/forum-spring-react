@@ -20,7 +20,6 @@ const EditProfileView = () => {
     useEffect(()=>{
         fetchCall('http://localhost:8080/ForumUser/my-profile', "GET", jwt, null, 'return-response-json')
         .then((forumUser)=>{
-            console.log(forumUser);
             setFirstName(forumUser.firstName)
             setLastName(forumUser.lastName)
             setDateOfBirth(new Date (forumUser.dateOfBirth))
@@ -35,7 +34,6 @@ const EditProfileView = () => {
         fetchCall('http://localhost:8080/ForumUser/edit-profile', 'POST', jwt, updateReq)
         .then((response)=>{
             if(response.status === 200){
-                console.log("profile succesfully updated");
                 navigate('/my-profile')
             }
         })

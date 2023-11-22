@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useLocalState } from "../Util/useLocalStorage"
 import { Button, TextField, Box, Container, Paper } from "@mui/material"
 import fetchCall from "../Services/FetchService"
@@ -11,13 +11,12 @@ const EditTopicView = () => {
     const [body, setBody] = useState('')
     const [id, setId] = useState('')
     const navigate = useNavigate()
+    const { topicId } = useParams
 
 
     useEffect(()=>{
-        const topicId = window.location.href.split('/edit-topic/')[1]
         fetchCall(`http://localhost:8080/topic/${topicId}`, 'GET', jwt, null, 'return-response-json')
         .then((topic)=>{
-            console.log(topic);
             setTopic(topic)
             setTitle(topic.title)
             setBody(topic.body)
@@ -32,7 +31,6 @@ const EditTopicView = () => {
         fetchCall('http://localhost:8080/topic/edit-topic', 'POST', jwt, updateReq)
         .then((response)=>{
             if(response.status === 200){
-                console.log("topic succesfylly edited");
                 navigate('/my-topics')
             }
         })

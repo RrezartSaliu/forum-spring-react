@@ -2,12 +2,12 @@ import { useLocalState } from "../Util/useLocalStorage";
 import { useEffect, useState } from "react";
 import moment from "moment-timezone";
 import { Container, Paper, CircularProgress, Button } from '@mui/material'
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import fetchCall from "../Services/FetchService";
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 
 const ForumUserView = () => {
-    const forumUserId = window.location.href.split('/forum-user/')[1]
+    const forumUserId = useParams()
     const [ jwt, setJwt ] = useLocalState('', 'jwt')
     const [ otherForumUser, setOtherForumUser ] = useState(null)
     const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -27,7 +27,6 @@ const ForumUserView = () => {
         fetchCall('http://localhost:8080/topic/latest-topics', 'POST', jwt, pageTopicReq, 'return-response-json').then((topic)=>{
         if(topic.content.length !== 0){
             const newTopics = [...recentTopicsForWindow, ...topic.content]
-            console.log(newTopics);
             setRecentTopicsForWindow(newTopics)
         }
         else alert("Thats all the topics")
@@ -40,7 +39,6 @@ const ForumUserView = () => {
         fetchCall('http://localhost:8080/topic/latest-topics', 'POST', jwt, pageTopicReq, 'return-response-json').then((topic)=>{
         if(topic.content.length !== 0){
             const newTopics = [...recentTopics, ...topic.content]
-            console.log(newTopics);
             setRecentTopics(newTopics)
         }
         else alert("Thats all the topics")
@@ -91,9 +89,9 @@ const ForumUserView = () => {
                                     setShowAllHistory(false)}}><HighlightOffIcon/></Button>
                             {
                                 recentTopicsForWindow.map((topic)=>(
-                                    <>
-                                    <div>{topic.title}</div>
-                                    </>
+                                
+                                    <div key={topic.id}>{topic.title}</div>
+                                
                                 ))
                             }
                             <Button onClick={()=>viewMoreTopics()}>View more</Button>

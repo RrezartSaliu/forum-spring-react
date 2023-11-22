@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Date;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -42,5 +43,16 @@ public class MessageController {
         messageService.createMessage(messageToSave);
 
         return ResponseEntity.ok(null);
+    }
+
+    @PostMapping("/read-message")
+    public ResponseEntity<?> readMessage(@RequestBody Map<String, Object> req, @AuthenticationPrincipal ForumUser forumUser){
+        if(Long.valueOf(String.valueOf(req.get("receiverId"))) == forumUser.getId()){
+            messageService.readMessage(Long.valueOf(String.valueOf(req.get("messageId"))));
+            return ResponseEntity.ok(null);
+        }
+        else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

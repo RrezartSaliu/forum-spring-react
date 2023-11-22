@@ -13,11 +13,7 @@ const MessageWindow = ({ forumUser, closeMessageWindow, topicId }) => {
         e.preventDefault()
 
         const request = { message, receiverId: friendId, topicLink: `/topics/${topicId}`}
-        console.log(request);
-        fetchCall('http://localhost:8080/message/send-message', 'POST', jwt, request).then((response)=>{
-            if (response.status === 200)
-                console.log('success');
-        })
+        fetchCall('http://localhost:8080/message/send-message', 'POST', jwt, request)
     }
 
     return ( 
