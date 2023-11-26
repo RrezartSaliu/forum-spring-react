@@ -93,13 +93,27 @@ const TopicsView = () => {
     },[topicId])
 
 
-    const handleLike = (action)=>{
-        fetchCall(`http://localhost:8080/topic/add-topic-like/${topic.topicId}/${action}`, 'GET', jwt)
+    const handleLike = (event, action, urlAction, commentId )=>{
+        event.stopPropagation()
+        let urlForResponse
+        let urlId
+        if(urlAction === 'topic/add-topic-like'){
+            urlForResponse = 'topic' 
+            urlId = topicId
+            }
+        else if(urlAction === 'comment/add-comment-like'){
+            urlForResponse = 'comment/get-comments-for-topic'
+            urlId = commentId
+        }
+
+        fetchCall(`http://localhost:8080/${urlAction}/${urlId}/${action}`, 'GET', jwt)
         .then((response)=>{
             if(response.status === 200){
-                fetchCall(`http://localhost:8080/topic/${topic.topicId}`, 'GET', jwt, null, 'return-response-json')
-                .then((topic)=>{
-                    setTopic(topic)
+                fetchCall(`http://localhost:8080/${urlForResponse}/${topic.topicId}`, 'GET', jwt, null, 'return-response-json')
+                .then((value)=>{
+                    if(urlForResponse === 'topic')
+                        setTopic(value)
+                    else setComments(value)
                 }).then(fetchCall('http://localhost:8080/ForumUser/my-profile', 'GET', jwt, null, 'return-response-json')
                 .then((forumUser)=>{
                     setForumUser(forumUser)   
@@ -122,7 +136,7 @@ const TopicsView = () => {
                                 forumUser.fUserId === topic.author.fUserId?<Link to={`/edit-topic/${topic.topicId}`}>Edit Topic</Link>:<></>
                             }
                         </div>
-                        { forumUser.likedTopics.map((topic)=>(topic.id)).includes(topic.topicId)?<Button onClick={()=>{handleLike('unlike')}}><FavoriteIcon/></Button>:<Button onClick={()=>{handleLike('like')}}><FavoriteBorderIcon/></Button> }
+                        { forumUser.likedTopics.map((topic)=>(topic.id)).includes(topic.topicId)?<Button onClick={(e)=>{handleLike(e,'unlike','topic/add-topic-like')}}><FavoriteIcon/></Button>:<Button onClick={(e)=>{handleLike(e,'like', 'topic/add-topic-like')}}><FavoriteBorderIcon/></Button> }
                         { topic.likes }
                     </Container>
                 </Paper>
@@ -138,12 +152,15 @@ const TopicsView = () => {
                             >
                             <p>{comment.commentBody}</p>
                             <p> --- by <Link to={`/forum-user/${comment.author.id}`}>{comment.author.firstName} {comment.author.lastName}</Link></p>
+                            { forumUser.likedComments.map((comment)=>(comment.id)).includes(comment.id)?<Button onClick={(e)=>{handleLike(e, 'unlike', 'comment/add-comment-like', comment.id)}}><FavoriteIcon/></Button>:<Button onClick={(e)=>{handleLike(e, 'like', 'comment/add-comment-like', comment.id)}}><FavoriteBorderIcon/></Button> }
+                            {comment.likes}
                             </AccordionSummary>
                             {
                                 comment.comments.map((reply)=>(
                                 <AccordionDetails key={reply.id}> 
                                 <Typography>
                                     {reply.commentBody}
+                                    { forumUser.likedComments.map((comment)=>(comment.id)).includes(reply.id)?<Button onClick={(e)=>{handleLike(e, 'unlike', 'comment/add-comment-like', reply.id)}}><FavoriteIcon/></Button>:<Button onClick={(e)=>{handleLike(e, 'like', 'comment/add-comment-like', reply.id)}}><FavoriteBorderIcon/></Button> }
                                 </Typography>
                                 </AccordionDetails>
                                     ))

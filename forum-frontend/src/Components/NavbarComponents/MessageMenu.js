@@ -46,7 +46,8 @@ const MessageMenu = () => {
               <Button onClick={()=>setShowMessagesWindow(false)}><HighlightOffIcon/></Button>
                   <div>
                     {
-                      messages.map((message)=>(<div key={message.id} style={{ color: 'black' }}>{message.sender.firstName} {message.sender.lastName} sent you this topic: <Button onClick={()=>{handleRead(message.link, message.read, message.receiver.id, message.id )}}>click</Button></div>))
+
+                      messages.map((message)=>(<div key={message.id} style={{ backgroundColor: !message.read?'red':'white', color: 'black' }}>{message.sender.firstName} {message.sender.lastName} sent you this topic: <Button onClick={()=>{handleRead(message.link, message.read, message.receiver.id, message.id )}}>click</Button></div>))
                     }
                   </div>
               </div>

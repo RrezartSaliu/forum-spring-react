@@ -48,7 +48,8 @@ public class TopicController {
                 topic1.getBody(),
                 forumUserResponse,
                 0,
-                new Date()
+                new Date(),
+                topic1.getComments()
         );
 
         return ResponseEntity.ok(topicResponse);
@@ -65,7 +66,8 @@ public class TopicController {
                     topic.getBody(),
                     new ForumUserResponseDTO(forumUser.getId(),forumUser.getFirstName(), forumUser.getLastName(), forumUser.getEmailAddress(), forumUser.getDateOfBirth(), forumUser.getFriends()),
                     topic.getLikes(),
-                    topic.getCreationDate()
+                    topic.getCreationDate(),
+                    topic.getComments()
             ));
         }
 
@@ -77,7 +79,7 @@ public class TopicController {
         Topic topic = topicService.findById(topicId);
         TopicResponseDTO topicResponseDTO = new TopicResponseDTO(topic.getId(), topic.getTitle(), topic.getBody(),
                 new ForumUserResponseDTO(topic.getAuthor().getId(), topic.getAuthor().getFirstName(), topic.getAuthor().getLastName(), topic.getAuthor().getEmailAddress(), topic.getAuthor().getDateOfBirth(), topic.getAuthor().getFriends()),
-                topic.getLikes(),topic.getCreationDate()
+                topic.getLikes(),topic.getCreationDate(), topic.getComments()
                 );
 
         return ResponseEntity.ok(topicResponseDTO);
@@ -130,5 +132,11 @@ public class TopicController {
     public ResponseEntity<?> getLatestAuthorTopics(@RequestBody Map<String, Object> req){
 
         return ResponseEntity.ok(topicService.getLatestAuthorActivity(Long.valueOf(String.valueOf(req.get("forumUserId"))), (Integer) req.get("page"), (Integer) req.get("size")));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> search(@RequestParam String searchValue){
+
+        return ResponseEntity.ok(topicService.search(searchValue));
     }
 }

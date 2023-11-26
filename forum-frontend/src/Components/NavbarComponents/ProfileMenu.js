@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { MenuItem, Menu, Button } from "@mui/material";
-import Person2OutlinedIcon from '@mui/icons-material/Person2Outlined';
+import AccountCircle from '@mui/icons-material/AccountCircle';
 
 const ProfileMenu = ({ userLoggedIn, updateLoggedInUser }) => {
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -24,7 +24,7 @@ const ProfileMenu = ({ userLoggedIn, updateLoggedInUser }) => {
               onClick={handleClickProfile}
               color='inherit'
             >
-              <Person2OutlinedIcon></Person2OutlinedIcon>
+              <AccountCircle />
             </Button>
             <Menu
               id="basic-menu"

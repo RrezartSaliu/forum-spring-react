@@ -21,6 +21,7 @@ public class ForumUserResponseDTO {
     private Set<Topic> likedTopics;
     private Set<ForumUser> receivedRequests;
     private Set<ForumUser> sentRequests;
+    private Set<Comment> likedComments;
 
 
     public ForumUserResponseDTO(Long fUserId, String firstName, String lastName, String emailAddress, Date dateOfBirth, List<ForumUser> friends) {
@@ -30,6 +31,14 @@ public class ForumUserResponseDTO {
         this.emailAddress = emailAddress;
         this.dateOfBirth = dateOfBirth;
         this.friends = friends;
+    }
+
+    public Set<Comment> getLikedComments() {
+        return likedComments;
+    }
+
+    public void setLikedComments(Set<Comment> likedComments) {
+        this.likedComments = likedComments;
     }
 
     public Set<ForumUser> getSentRequests() {

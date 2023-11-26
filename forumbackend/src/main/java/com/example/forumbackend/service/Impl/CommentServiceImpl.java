@@ -70,4 +70,9 @@ public class CommentServiceImpl implements CommentService {
         return comment1;
     }
 
+    @Override
+    public List<Comment> getAllCommentsByTopicNotNull() {
+        return commentRepository.getAllByTopicIsNotNull();
+    }
+
 }

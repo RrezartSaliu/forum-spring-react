@@ -16,4 +16,5 @@ public interface TopicRepository extends JpaRepository<Topic, Long>{
     List<Topic> getAllByCategoryOrderByLikes (Category category);
     List<Topic> getAllByCategoryOrderByCreationDate (Category category);
     Page<Topic> findAllByAuthorOrderByCreationDateDesc (ForumUser forumUser, Pageable pageable);
+    List<Topic> findAllByTitleContainingIgnoreCase (String titleQuery);
 }

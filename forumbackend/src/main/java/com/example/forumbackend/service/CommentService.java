@@ -18,4 +18,6 @@ public interface CommentService {
     List<Comment> getAllByTopic(Long topicId);
 
     Comment addReply(Comment comment, Long parentCommentId);
+
+    List<Comment> getAllCommentsByTopicNotNull();
 }

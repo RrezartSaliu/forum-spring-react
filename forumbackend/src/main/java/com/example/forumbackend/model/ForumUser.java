@@ -38,6 +38,10 @@ public class ForumUser implements UserDetails {
     @JsonIgnore
     private Set<Topic> likedTopics;
     @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "forum_user_liked_comments", joinColumns = @JoinColumn(name = "forum_user_id"), inverseJoinColumns = @JoinColumn(name = "comment_id"))
+    @JsonIgnore
+    private Set<Comment> likedComments;
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "friend_requests",
             joinColumns = @JoinColumn(name = "sender_id"),
@@ -63,6 +67,22 @@ public class ForumUser implements UserDetails {
 
     public ForumUser() {
 
+    }
+
+    public void removeLikedComment(Comment comment){
+        likedComments.remove(comment);
+    }
+
+    public void addLikedComment(Comment comment){
+        likedComments.add(comment);
+    }
+
+    public Set<Comment> getLikedComments() {
+        return likedComments;
+    }
+
+    public void setLikedComments(Set<Comment> likedComments) {
+        this.likedComments = likedComments;
     }
 
     public void removeSentFriendRequest(ForumUser forumUser){

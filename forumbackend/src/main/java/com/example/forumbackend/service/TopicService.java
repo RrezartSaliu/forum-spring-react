@@ -19,4 +19,5 @@ public interface TopicService {
     List<Topic> getAllByCategory(Category category);
     List<Topic> getAllByCategorySorted (Category category, String order);
     Page<Topic> getLatestAuthorActivity (Long forumUserId, Integer page, Integer size);
+    List<Topic> search(String titleQuery);
 }

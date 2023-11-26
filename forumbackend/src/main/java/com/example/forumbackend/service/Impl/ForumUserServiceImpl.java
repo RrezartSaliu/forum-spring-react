@@ -1,9 +1,11 @@
 package com.example.forumbackend.service.Impl;
 
 import com.example.forumbackend.model.Authority;
+import com.example.forumbackend.model.Comment;
 import com.example.forumbackend.model.ForumUser;
 import com.example.forumbackend.model.Topic;
 import com.example.forumbackend.repository.AuthorityRepository;
+import com.example.forumbackend.repository.CommentRepository;
 import com.example.forumbackend.repository.ForumUserRepository;
 import com.example.forumbackend.repository.TopicRepository;
 import com.example.forumbackend.service.ForumUserService;
@@ -18,12 +20,14 @@ public class ForumUserServiceImpl implements ForumUserService {
     private final PasswordEncoder passwordEncoder;
     private final AuthorityRepository authorityRepository;
     private final TopicRepository topicRepository;
+    private final CommentRepository commentRepository;
 
-    public ForumUserServiceImpl(ForumUserRepository forumUserRepository, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository, TopicRepository topicRepository) {
+    public ForumUserServiceImpl(ForumUserRepository forumUserRepository, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository, TopicRepository topicRepository, CommentRepository commentRepository) {
         this.forumUserRepository = forumUserRepository;
         this.passwordEncoder = passwordEncoder;
         this.authorityRepository = authorityRepository;
         this.topicRepository = topicRepository;
+        this.commentRepository = commentRepository;
     }
 
     @Override
@@ -121,5 +125,35 @@ public class ForumUserServiceImpl implements ForumUserService {
         sender.removeSentFriendRequest(receiver);
         forumUserRepository.save(receiver);
         forumUserRepository.save(sender);
+    }
+
+    @Override
+    public void cancelFriendRequest(Long senderId, Long receiverId) {
+        ForumUser receiver = findById(receiverId);
+        ForumUser sender = findById(senderId);
+        sender.removeSentFriendRequest(receiver);
+        receiver.removeReceivedFriendRequest(sender);
+        forumUserRepository.save(sender);
+        forumUserRepository.save(receiver);
+    }
+
+    @Override
+    public void likeComment(Long forumUserId, Long commentId) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow();
+        comment.setLikes(comment.getLikes()+1);
+        commentRepository.save(comment);
+        ForumUser forumUser = this.findById(forumUserId);
+        forumUser.addLikedComment(comment);
+        forumUserRepository.save(forumUser);
+    }
+
+    @Override
+    public void unlikeComment(Long forumUserId, Long commentId) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow();
+        comment.setLikes(comment.getLikes()-1);
+        commentRepository.save(comment);
+        ForumUser forumUser = this.findById(forumUserId);
+        forumUser.removeLikedComment(comment);
+        forumUserRepository.save(forumUser);
     }
 }

@@ -88,6 +88,7 @@ public class ForumUserController {
         forumUserResponseDTO.setBio(forumUser.getBio());
         forumUserResponseDTO.setReceivedRequests(forumUser.getReceivedFriendRequest());
         forumUserResponseDTO.setSentRequests(forumUser.getSentFriendRequest());
+        forumUserResponseDTO.setLikedComments(forumUser.getLikedComments());
         return ResponseEntity.ok(forumUserResponseDTO);
     }
 
@@ -112,6 +113,13 @@ public class ForumUserController {
     @PostMapping("/send-friend-request")
     public ResponseEntity<?> sendFriendRequest(@AuthenticationPrincipal ForumUser forumUser, @RequestBody ForumUser reqReceiver){
         forumUserService.sendFriendRequest(forumUser.getId(), reqReceiver.getId());
+
+        return ResponseEntity.ok(null);
+    }
+
+    @PostMapping("/cancel-friend-request")
+    public ResponseEntity<?> cancelFriendRequest(@AuthenticationPrincipal ForumUser forumUser, @RequestBody ForumUser reqReceiver){
+        forumUserService.cancelFriendRequest(forumUser.getId(), reqReceiver.getId());
 
         return ResponseEntity.ok(null);
     }

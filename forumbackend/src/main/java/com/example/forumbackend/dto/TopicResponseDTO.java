@@ -1,7 +1,10 @@
 package com.example.forumbackend.dto;
 
 
+import com.example.forumbackend.model.Comment;
+
 import java.util.Date;
+import java.util.List;
 
 public class TopicResponseDTO {
     private Long topicId;
@@ -10,14 +13,24 @@ public class TopicResponseDTO {
     private ForumUserResponseDTO author;
     private Integer likes;
     private Date creationDate;
+    private List<Comment> comments;
 
-    public TopicResponseDTO(Long topicId, String title, String body, ForumUserResponseDTO author, Integer likes, Date creationDate) {
+    public TopicResponseDTO(Long topicId, String title, String body, ForumUserResponseDTO author, Integer likes, Date creationDate, List<Comment> comments) {
         this.topicId = topicId;
         this.title = title;
         this.body = body;
         this.author = author;
         this.likes = likes;
         this.creationDate = creationDate;
+        this.comments = comments;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 
     public String getTitle() {

@@ -7,7 +7,7 @@ import fetchCall from "../Services/FetchService";
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 
 const ForumUserView = () => {
-    const forumUserId = useParams()
+    const { forumUserId } = useParams()
     const [ jwt, setJwt ] = useLocalState('', 'jwt')
     const [ otherForumUser, setOtherForumUser ] = useState(null)
     const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -72,6 +72,14 @@ const ForumUserView = () => {
         setRequestSent(true)
     }
 
+    const cancelFriendRequest = () => {
+        const receiverId = { id: otherForumUser.fUserId }
+        fetchCall('http://localhost:8080/ForumUser/cancel-friend-request', 'POST', jwt, receiverId).then((response)=>{
+            if(response.status === 200)
+                setRequestSent(false)
+        })
+    }
+
     const viewMoreTopics = () =>{
         setPageTopic(pageTopic+1)
     }
@@ -108,7 +116,7 @@ const ForumUserView = () => {
                             <h4>{otherForumUser.emailAddress}</h4>
                             <h5>{moment(otherForumUser.dateOfBirth).tz(userTimeZone).format('DD-MM-YYYY')}</h5>
                             {
-                                !isFriend? !requestSent?<Button onClick={()=>sendFriendRequest()}>Add Friend</Button>:<Button>Cancel Request</Button>: <></>
+                                !isFriend? !requestSent?<Button onClick={()=>sendFriendRequest()}>Add Friend</Button>:<Button onClick={()=>cancelFriendRequest()}>Cancel Request</Button>: <></>
                             }   
                         </div>
                         <div style={{ float: 'right', display: 'block' }}>

@@ -95,4 +95,9 @@ public class TopicServiceImpl implements TopicService {
 
     }
 
+    @Override
+    public List<Topic> search(String titleQuery) {
+        return topicRepository.findAllByTitleContainingIgnoreCase(titleQuery);
+    }
+
 }
